@@ -1,7 +1,7 @@
 from lib import *
 import json
 
-blockchain = BlockChain(pattern='111111')
+# blockchain = BlockChain(pattern='111111')
 # t1 = Transaction()
 # t2 = Transaction()
 # t1.add(b'abc')
@@ -13,5 +13,6 @@ blockchain = BlockChain(pattern='111111')
 # blockchain.add(Block(t2), mine=True)
 # blockchain.describe()
 # blockchain.backup()
-blockchain = blockchain.recoverBackup()
+blockchain = BlockChain().recoverBackup()
 print(blockchain.validate())
+blockchain.describe()

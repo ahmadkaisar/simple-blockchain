@@ -22,7 +22,7 @@ class Transaction:
 		res = []
 		for transaction in self.transaction:
 			res += [transaction.convert()]
-		return json.dumps(res)
+		return res
 	def hash(self):
 		thash = [x.hash() for x in self.transaction]
 		thash, self.transaction = zip(*sorted(zip(thash, self.transaction)))
