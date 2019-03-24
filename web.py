@@ -288,8 +288,6 @@ def syncPendingBlock():
 		pending_block.header.timestamp = resp['timestamp']
 		pending_block.header.nonce = resp['nonce']
 		pending_block.header.hash = resp['hash']
-		if pen
-		sequenceMining(pending_block, resp['pattern'])
 
 readArgs(sys.argv)
 blockchain = BlockChain().recoverBackup()

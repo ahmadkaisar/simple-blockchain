@@ -1,18 +1,39 @@
 from lib import *
 import json
 
-# blockchain = BlockChain(pattern='111111')
-# t1 = Transaction()
-# t2 = Transaction()
-# t1.add(b'abc')
-# t1.add(b'def')
-# t1.add(b'ghi')
-# t2.add(b'masamune')
-# t2.add(b'kenji')
-# blockchain.add(Block(t1), mine=True)
-# blockchain.add(Block(t2), mine=True)
+############# Test Backup ################
+# blockchain = BlockChain(pattern='1', difficulty=4)
+# t1 = Transactions()
+# t2 = Transactions()
+# t1.add(Value('addr1', 'addr2', b'100'))
+# t1.add(Value('addr1', 'addr2', b'50'))
+# t1.add(Value('addr2', 'addr1', b'70'))
+# t2.add(Value('addr1', 'addr2', b'20'))
+# t2.add(Value('addr2', 'addr1', b'30'))
+# block = Block(t1, prev_hash=blockchain.last_block.block.hash)
+
+# # example add block to blockchain but block not mine yet
+# blockchain.add(block)
+
+# # mine block
+# Mine(block).sequence(pattern=blockchain.pattern, difficulty=blockchain.difficulty)
+# blockchain.add(block)
+# block = Block(t2, prev_hash=blockchain.last_block.block.hash)
+# Mine(block).sequence(pattern=blockchain.pattern, difficulty=blockchain.difficulty)
+# blockchain.add(block)
+
+# # example add new block with invalid prev hash
+# block = Block(t2, prev_hash='12345678')
+# Mine(block).sequence(pattern=blockchain.pattern, difficulty=blockchain.difficulty)
+# blockchain.add(block)
 # blockchain.describe()
-# blockchain.backup()
-blockchain = BlockChain().recoverBackup()
+# print(blockchain.validate())
+# blockchain.backupFile()
+##########################################
+
+
+########### Test Recover #################
+blockchain = BlockChain().recoverBackupFile()
 print(blockchain.validate())
 blockchain.describe()
+##########################################

@@ -1,1 +1,0 @@
-{"header": {"nonce": 220654, "timestamp": "2019-03-23 12:26:41.775285", "prev_hash": null}, "hash": null, "index": 1, "transaction": [{"value": "b'abc'", "timestamp": "2019-03-23 12:26:40.074020"}, {"value": "b'ghi'", "timestamp": "2019-03-23 12:26:40.074020"}, {"value": "b'def'", "timestamp": "2019-03-23 12:26:40.074020"}]}
