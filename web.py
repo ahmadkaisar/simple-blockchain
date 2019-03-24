@@ -11,9 +11,6 @@ known = []
 maximum = 4
 mining = None
 pending_block = None
-point = 0
-position = 'master'
-reward = 2
 timeout = 10
 timeup = str(datetime.datetime.utcnow())
 transaction = Transaction()
@@ -57,13 +54,11 @@ def blocksPending():
 def blocksPendingApprove():
 	global blockchain
 	global pending_block
-	global reward
 	try:
 		if position == 'master' and pending_block is not None:
 			pending_block.header.nonce = request.form['nonce']
 			blockchain.add(pending_block)
 			pending_block = None
-			reward = reward / 2
 			return jsonify({'reward':reward})
 	except:
 		return jsonify({'reward':0})
@@ -101,22 +96,6 @@ def createPendingBlock():
 		print('[*] empty transaction')
 	else:
 		print('[*] fail to create pending block')
-
-def getReward():
-	global point
-	while True:
-		if pending_block is not None:
-			if pending_block.header.nonce is not None:
-				for addr in known:
-					resp = requestPost(addr + '/blocks/pending/approve', {'nonce':pending_block.header.nonce})
-					if resp is None:
-						continue
-					resp = json.loads(resp)
-					if resp['reward'] > 0:
-						print('[*] block accepted')
-						print('[*] get reward', resp['reward'])
-						point += resp['reward']
-						break
 
 def masterProcess():
 	createPendingBlock()
@@ -238,8 +217,6 @@ def servantProcess():
 	_thread.start_new_thread(syncMaster, ())
 	_thread.start_new_thread(syncBlockChain, ())
 	_thread.start_new_thread(syncPendingBlock, ())
-	_thread.start_new_thread(syncPoint, ())
-	_thread.start_new_thread(getReward, ())
 
 def syncBlockChain():
 	global blockchain
@@ -263,13 +240,6 @@ def syncMaster():
 		elif resp['position'] == 'local':
 			pass
 
-def syncPoint():
-	global point
-	for addr in known:
-		temp = json.loads(requestGet(addr + '/point'))['point']
-		if temp > 0:
-			point = temp
-
 def syncPendingBlock():
 	global pending_block
 	for addr in known:
@@ -290,6 +260,5 @@ def syncPendingBlock():
 		pending_block.header.hash = resp['hash']
 
 readArgs(sys.argv)
-blockchain = BlockChain().recoverBackup()
 _thread.start_new_thread(masterServantProcess, (timeout,))
 app.run(host='0.0.0.0', port=port)
