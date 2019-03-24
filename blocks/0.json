@@ -1,1 +1,0 @@
-{"hash": "1111a36e1e754321452a36f846f358aa5f2cb581634f67d19dea6344176bb950", "index": 0, "header": {"prev_hash": 0, "timestamp": "2019-03-24 05:13:41.576519", "nonce": 243585}, "transactions": [{"timestamp": "2019-03-24 05:13:41.576223", "transaction": {"fromAddress": "", "value": "b'Genesis Block'", "toAddress": ""}}]}

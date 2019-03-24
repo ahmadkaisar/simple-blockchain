@@ -3,12 +3,13 @@ from .block import *
 from .mine import *
 
 class BlockChain:
-	def __init__(self, new_block=None, genesis=b'Genesis Block', pattern='0', difficulty=1):
+	def __init__(self, difficulty=1, genesis=b'Genesis Block', mining_reward=100, new_block=None, pattern='0'):
 		self.index = 0
 		self.difficulty = difficulty
 		self.pattern = self.handlePattern(pattern)
 		self.block = new_block if new_block is not None else self.generateGenesis(genesis)
 		self.next = None
+		self.mining_reward = mining_reward
 		self.last_block = self
 	def add(self, new_block):
 		print('[*] add block')
@@ -27,29 +28,8 @@ class BlockChain:
 		blockchain = self.next
 		while blockchain.next is not None:
 			blockchain.last = self.last_block
+			blockchain.mining_reward = self.mining_reward
 			blockchain = blockchain.next
-	def backupFile(self):
-		path = 'blocks/'
-		if not os.path.exists(path):
-			print('[*] backup directory not exists')
-			print('[*] make new directory')
-			os.makedirs(path)
-		blockchain = self
-		try:
-			while True:
-				temp = blockchain.block.convert()
-				temp['index'] = blockchain.index
-				with open(path + str(blockchain.index) + '.json', 'w') as f:
-					json.dump(temp, f)
-				if blockchain.next is None:
-					break
-				blockchain = blockchain.next
-			with open(path + 'config.json', 'w') as f:
-				temp = {'pattern':self.pattern, 'difficulty':self.difficulty}
-				json.dump(temp, f)
-			print('[*] backup to file successfully completed')
-		except:
-			print('[*] backup to file failed')
 	def convert(self):
 		blockchain = self
 		result = []
@@ -61,8 +41,10 @@ class BlockChain:
 				break
 			blockchain = blockchain.next
 		return {
-			'pattern':self.pattern,
-			'blockchain':result
+			'blockchain':result,
+			'difficulty':self.last_block.difficulty,
+			'mining_reward':self.mining_reward,
+			'pattern':self.pattern
 		}
 	def describe(self):
 		print('[*] describe blockchain')
@@ -75,9 +57,9 @@ class BlockChain:
 		print('[*] end describe')
 	def generateGenesis(self, genesis):
 		genesis_transaction = Transactions()
-		genesis_transaction.add(Value('', '', genesis))
-		genesis_block = Block(genesis_transaction, prev_hash=0)
-		Mine(genesis_block).sequence(pattern=self.pattern, difficulty=self.difficulty)
+		genesis_transaction.add(Transaction(value=Value('', '', genesis)))
+		genesis_block = Block(prev_hash=0, transactions=genesis_transaction)
+		Mine('', genesis_block, Block()).sequence(difficulty=self.difficulty, pattern=self.pattern, reward=0)
 		return genesis_block
 	def getIndex(self, index=0):
 		blockchain = self
@@ -93,44 +75,30 @@ class BlockChain:
 				return {'pattern':self.pattern, 'blockchain':None}
 			blockchain = blockchain.next
 		return blockchain.convert()
+	def getBalance(self, addr):
+		balance = 0
+		blockchain = self
+		while blockchain is not None:
+			block = blockchain.block.convert()
+			for transaction in block['transactions']:
+				transaction = transaction['transaction']
+				try:
+					value = transaction['value'][2:]
+					value = value[:len(value)-1]
+					if transaction['fromAddress'] == addr:
+						balance -= int(value)
+					elif transaction['toAddress'] == addr:
+						balance += int(value)
+				except:
+					pass
+			blockchain = blockchain.next
+		return balance
 	def handlePattern(self, pattern):
 		pattern = pattern.lower()
 		pattern = ''.join([x for x in pattern if (x >= 'a' and x <= 'f') or (x >= '0' and x <= '9')])
 		pattern = pattern if len(pattern) > 0 else '0'
 		print('[*] accepted pattern', pattern)
 		return pattern
-	def recoverBackupFile(self, path='blocks/'):
-		index = 0
-		blockchain = None
-		try:
-			with open(path + 'config.json', 'r') as f:
-				difficulty = json.loads(f.read())['difficulty']
-				pattern = json.loads(f.read())['pattern']
-		except:
-			difficulty = self.difficulty
-			pattern = self.pattern
-		print('[*] recovering blockchain from file....')
-		while True:
-			try:
-				print('[*] recovering block', str(index))
-				with open(path + str(index) + '.json', 'r') as f:
-					data_block = json.loads(f.read())
-					if blockchain is None:
-						blockchain = BlockChain()
-						blockchain.block.decodeJson(data_block)
-					else:
-						block = Block()
-						block.decodeJson(data_block)
-						blockchain.add(block)
-					index += 1
-				print('[*] block', str(index - 1), 'recovered')
-			except:
-				print('[*] block', str(index), 'not found')
-				break
-		print('[*] recovering blockchain completed')
-		if blockchain is None:
-			return BlockChain()
-		return blockchain
 	def validate(self):
 		blockchain = self
 		while blockchain.next is not None:

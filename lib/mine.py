@@ -1,9 +1,13 @@
+from .block import *
 from .requirement import *
+from .transaction import *
 
 class Mine:
-	def __init__(self, block):
+	def __init__(self, addr, block, pending_block):
+		self.addr = addr
 		self.block = block
-	def sequence(self, pattern, difficulty, start=0, step=1):
+		self.pending_block = pending_block
+	def sequence(self, difficulty, pattern, reward, start=0, step=1):
 		pattern = ''.join([pattern for x in range(difficulty)])
 		print('[*] mining block using sequence algorithm')
 		while True:
@@ -18,3 +22,6 @@ class Mine:
 				self.block.hash = thash
 				break
 			start += step
+		transactions = Transactions()
+		transactions.add(Value('', self.addr, reward))
+		self.pending_block.transactions = transactions

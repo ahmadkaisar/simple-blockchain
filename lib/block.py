@@ -2,7 +2,7 @@ from .requirement import *
 from .transaction import *
 
 class Header:
-	def __init__(self, prev_hash=None):
+	def __init__(self, prev_hash):
 		self.prev_hash = prev_hash
 		self.timestamp = str(datetime.datetime.utcnow())
 		self.nonce = 0
@@ -12,15 +12,11 @@ class Header:
 			'timestamp':self.timestamp,
 			'nonce':self.nonce
 		}
-	def decodeJson(self, data):
-		self.prev_hash = data['prev_hash']
-		self.timestamp = data['timestamp']
-		self.nonce = data['nonce']
 
 class Block:
-	def __init__(self, transactions=Transactions(), prev_hash=None):
+	def __init__(self, prev_hash=None, transactions=None):
 		self.header = Header(prev_hash)
-		self.transactions = transactions
+		self.transactions = Transactions() if transactions is None else transactions
 		self.hash = None
 	def convert(self):
 		return {
@@ -28,7 +24,3 @@ class Block:
 			'transactions':self.transactions.convert(),
 			'hash':self.hash
 		}
-	def decodeJson(self, data):
-		self.header.decodeJson(data['header'])
-		self.transactions.decodeJson(data['transactions'])
-		self.hash = data['hash']
