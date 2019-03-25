@@ -1,7 +1,7 @@
 from .requirement import *
 
 class Value:
-	def __init__(self, fromAddress=b'', toAddress=b'', value=b''):
+	def __init__(self, fromAddress='', toAddress='', value=b''):
 		self.fromAddress = str(fromAddress)
 		self.toAddress = str(toAddress)
 		self.value = str(value)

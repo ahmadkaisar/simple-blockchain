@@ -4,11 +4,13 @@
 	<title>New Transaction</title>
 </head>
 <body>
-	<form action="http://localhost:1234/transaction/new" method="POST">
+	<form action="http://localhost:1234/transactions/new" method="POST">
 		<table>
 			<tr>
 				<td>Transaction</td>
-				<td><input type="text" name="transaction"></td>
+				<td><input type="text" name="fromAddress"></td>
+				<td><input type="text" name="toAddress">
+				<td><input type="text" name="value"></td>
 				<td><input type="submit" name="submit"></td>
 			</tr>
 		</table>

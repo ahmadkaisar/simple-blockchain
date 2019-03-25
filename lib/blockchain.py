@@ -59,7 +59,7 @@ class BlockChain:
 		genesis_transaction = Transactions()
 		genesis_transaction.add(Transaction(value=Value('', '', genesis)))
 		genesis_block = Block(prev_hash=0, transactions=genesis_transaction)
-		Mine('', genesis_block, Block()).sequence(difficulty=self.difficulty, pattern=self.pattern, reward=0)
+		Mine('', genesis_block, Transactions()).sequence(difficulty=self.difficulty, pattern=self.pattern, reward=0)
 		return genesis_block
 	def getIndex(self, index=0):
 		blockchain = self
@@ -85,7 +85,9 @@ class BlockChain:
 				try:
 					value = transaction['value'][2:]
 					value = value[:len(value)-1]
-					if transaction['fromAddress'] == addr:
+					if transaction['fromAddress'] == transaction['toAddress']:
+						continue
+					elif transaction['fromAddress'] == addr:
 						balance -= int(value)
 					elif transaction['toAddress'] == addr:
 						balance += int(value)
